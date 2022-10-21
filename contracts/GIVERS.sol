@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-import "./interfaces";
+import "./interfaces/IERC20.sol";
+import "./interfaces/IUniswap.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 /**  
                                                                                     
@@ -20,8 +22,9 @@ import "@openzeppelin/contracts/utils/Address.sol";
    3% fee for liquidity will go to an address that the contract creates, and the contract will sell it and add to liquidity automatically.
 */
 
-contract GIVERS is IERC20, IUniswap, Ownable {
+contract GIVERS is IERC20, Ownable {
     using Address for address;
+    using SafeMath for uint;
     
 	address payable public _charityWallet;
     address payable public _marketingWallet;
@@ -65,7 +68,7 @@ contract GIVERS is IERC20, IUniswap, Ownable {
     bool inSwapAndLiquify;
     bool public swapAndLiquifyEnabled = true;
     
-    uint256 public _maxTxAmount = 1000000000000 * 10**18;
+    uint256 public _maxTxAmount = 1000000000 * 10**18;
     uint256 private numTokensSellToAddToLiquidity = 1000000 * 10**18;
 	
     event MinTokensBeforeSwapUpdated(uint256 minTokensBeforeSwap);
@@ -88,7 +91,7 @@ contract GIVERS is IERC20, IUniswap, Ownable {
 		_charityWallet = charityWallet;
 	    _marketingWallet = marketingWallet;
 		
-        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x10ED43C718714eb63d5aA57B78B54704E256024E);
+        IUniswapV2Router02 _uniswapV2Router = IUniswapV2Router02(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
          // Create a uniswap pair for this new token
         uniswapV2Pair = IUniswapV2Factory(_uniswapV2Router.factory())
             .createPair(address(this), _uniswapV2Router.WETH());
