@@ -18,17 +18,10 @@ describe("Tocken Contract", function () {
 
   async function deployTokenFixture() {
     const TOTAL_SUPPLY = 1000000000;
-  
-    // Contracts are deployed using the first signer/account by default
     const [owner, otherAccount, charityWallet, marketingWallet] = await ethers.getSigners();
-
     const givers = await ethers.getContractFactory("GIVERS");
     const GIVERS = await givers.deploy( charityWallet.address, marketingWallet.address);
-    
-
     return { givers, GIVERS, charityWallet, marketingWallet, owner, otherAccount, TOTAL_SUPPLY };
-
-    console.log(TOTAL_SUPPLY);
   }
 
   describe("Deployment", function () {
@@ -38,10 +31,24 @@ describe("Tocken Contract", function () {
         expect(new BigNumber((await GIVERS.totalSupply()).toString()).div(10**18)).to.equal(new BigNumber(TOTAL_SUPPLY));
     });
 
-
-
-    
   });
+
+  describe("Transactions", function () {
+
+    it("Should transfer to wallets that are excluded and not excluded from fee", async function() {
+      const {GIVERS,owner,otherAccount} = await loadFixture(deployTokenFixture);
+      let tx1 = await GIVERS.connect(owner).transfer(otherAccount.address, 10);
+      let tx2 = await GIVERS.connect(owner).transfer(GIVERS.address, 10);   
+    });
+
+    it("should make sure adding liquidity works", async function () {
+
+      const { GIVERS, owner} = await loadFixture(deployTokenFixture);
+      let tx3 = await GIVERS.connect(owner).addLi 
+    })
+  })
+
+
 
   
     
